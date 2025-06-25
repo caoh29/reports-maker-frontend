@@ -20,17 +20,59 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
-## Learn More
+## Project Structure and Components
 
-To learn more about Next.js, take a look at the following resources:
+This project is organized as follows:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### src/
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+#### app/
 
-## Deploy on Vercel
+- **page.tsx**: The landing page. Introduces the app, its features, and allows users to select a report type.
+- **layout.tsx**: The root layout, applies global styles, fonts, and theme provider. Includes the main header.
+- **not-found.tsx**: Custom 404 page for invalid report types.
+- **globals.css**: Global styles using Tailwind CSS and custom properties for theming.
+- **favicon.ico**: App favicon.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+##### app/\_components/
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- **report-form.tsx**: Form for entering details for a selected report type. Handles form state and submission.
+- **custom-report-form.tsx**: Form for creating a fully custom report, including title, recipient, body, and author.
+- **report-preview.tsx**: Displays a live preview of the selected report type, showing how the generated document will look.
+- **report-selector.tsx**: UI for selecting a report type or custom report, with both dropdown and card-based selection.
+
+###### app/\_components/ui/
+
+- **header.tsx**: The main app header, includes branding and theme toggle.
+- **main.tsx**: Wrapper for main content, applies layout and background.
+- **toggle-theme.tsx**: Theme toggle button (light/dark/system), using a dropdown menu.
+- **theme-provider.tsx**: Provides theme context to the app using next-themes.
+
+####### app/\_components/ui/shadcn/
+
+- **button.tsx**: Reusable button component with multiple variants and sizes.
+- **card.tsx**: Card component with header, content, footer, and other subcomponents.
+- **dropdown-menu.tsx**: Dropdown menu component, used for theme toggle and other menus.
+- **input.tsx**: Styled input component for forms.
+- **label.tsx**: Accessible label component for form fields.
+- **select.tsx**: Select/dropdown component for choosing options.
+- **textarea.tsx**: Styled textarea component for multi-line input.
+
+##### app/create-report/
+
+- **[type]/page.tsx**: Dynamic route for creating a report of a specific type. Renders the appropriate form and preview.
+- **custom/page.tsx**: Page for creating a fully custom report using the custom report form.
+
+##### app/download/
+
+- **page.tsx**: Download page shown after report generation. Allows the user to download the generated PDF and return home or create a new report.
+
+#### lib/
+
+- **utils.ts**: Utility functions, including `cn` (class name merging) and `capitalizeString` (for formatting report type names).
+
+---
+
+Each component is designed for reusability and accessibility, leveraging Radix UI and shadcn/ui patterns. The app uses Tailwind CSS for styling and supports light/dark themes.
+
+For more details on each component, see the source files in `src/app/_components/` and `src/app/_components/ui/shadcn/`.
