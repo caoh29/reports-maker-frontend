@@ -3,7 +3,6 @@
 import type React from 'react';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/app/_components/ui/shadcn/button';
 import {
   Card,
@@ -40,7 +39,6 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
     managerName: '',
     managerTitle: '',
   });
-  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -53,19 +51,42 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
     e.preventDefault();
     setIsSubmitting(true);
 
+    const reqObj = {
+      body: {
+        date: new Date(),
+        employee: {
+          name: formData.employeeName,
+          documentType: 'Passport',
+          documentNumber: formData.employeeId,
+          role: formData.position,
+          startDate: formData.startDate,
+        },
+      },
+      sign: {
+        signerName: formData.managerName,
+        signerRole: formData.managerTitle,
+        companyName: formData.companyName,
+      },
+    };
+
     try {
       // Simulate API call to your backend
-      const response = await fetch(`/api/reports/${reportType}`, {
+      const response = await fetch(`http://localhost:4000/pdf/${reportType}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(reqObj),
       });
 
       if (response.ok) {
         // Redirect to download page
-        router.push('/download');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${formData.employeeName ?? 'custom-report'}.pdf`;
+        a.click();
       } else {
         throw new Error('Failed to generate report');
       }

@@ -1,9 +1,8 @@
 'use client';
 
 import type React from 'react';
-
+// import { useActionState } from 'react';
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/app/_components/ui/shadcn/button';
 import {
   Card,
@@ -28,7 +27,6 @@ export default function CustomReportForm() {
     authorTitle: '',
     date: new Date().toISOString().split('T')[0],
   });
-  const router = useRouter();
 
   const handleInputChange = (field: string, value: string) => {
     setFormData((prev) => ({
@@ -43,7 +41,7 @@ export default function CustomReportForm() {
 
     try {
       // Simulate API call to your backend
-      const response = await fetch('/api/reports/custom', {
+      const response = await fetch('http://localhost:4000/pdf/custom', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -52,8 +50,12 @@ export default function CustomReportForm() {
       });
 
       if (response.ok) {
-        // Redirect to download page
-        router.push('/download');
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${formData.title ?? 'custom-report'}.pdf`;
+        a.click();
       } else {
         throw new Error('Failed to generate report');
       }

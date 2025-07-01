@@ -46,7 +46,7 @@ interface PageProps {
 export default async function CreateReportPage({
   params,
 }: Readonly<PageProps>) {
-  const awaitedParams = await params;
+  const awaitedParams = await Promise.resolve(params);
   const { type } = awaitedParams;
 
   if (!validReportTypes.includes(type)) {
@@ -57,7 +57,7 @@ export default async function CreateReportPage({
     <Main className='bg-gray-50'>
       <div className='container flex flex-col items-center md:items-start mx-auto px-4 pt-8 pb-4'>
         <h1 className='text-2xl font-bold text-black'>
-          Create {capitalizeString(params.type)}
+          Create {capitalizeString(type)}
         </h1>
         <p className='text-gray-600'>Design your own personalized report</p>
       </div>
