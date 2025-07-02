@@ -28,16 +28,23 @@ interface ReportFormProps {
 export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
+    logoUrl: undefined,
     employeeName: '',
     employeeId: '',
+    employeeIdType: '',
     position: '',
     department: '',
     startDate: '',
     salary: '',
     workSchedule: '',
+    // contractType?: 'HOURLY' | 'ANNUALLY',
+    contractType: undefined,
     companyName: '',
+    companyPhone: '',
     managerName: '',
     managerTitle: '',
+    managerSignature: undefined,
+    // footer: string,
   });
 
   const handleInputChange = (field: string, value: string) => {
@@ -52,11 +59,18 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
     setIsSubmitting(true);
 
     const reqObj = {
+      header: {
+        logoUrl: formData.logoUrl,
+        stamp: {
+          companyName: formData.companyName,
+          companyPhone: formData.companyPhone,
+        },
+      },
       body: {
         date: new Date(),
         employee: {
           name: formData.employeeName,
-          documentType: 'Passport',
+          documentType: formData.employeeIdType,
           documentNumber: formData.employeeId,
           role: formData.position,
           startDate: formData.startDate,
@@ -65,6 +79,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
       sign: {
         signerName: formData.managerName,
         signerRole: formData.managerTitle,
+        signatureUrl: formData.managerSignature,
         companyName: formData.companyName,
       },
     };
@@ -87,6 +102,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         a.href = url;
         a.download = `${formData.employeeName ?? 'custom-report'}.pdf`;
         a.click();
+        alert('File was successfully generated!');
       } else {
         throw new Error('Failed to generate report');
       }
@@ -101,74 +117,113 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
   const getFormFields = () => {
     const commonFields = (
       <>
+        {/* <div className='space-y-2'>
+          <Label htmlFor='logoUrl'>Company Logo *</Label>
+          <Input
+            id='logoUrl'
+            type='file'
+            value={formData.logoUrl}
+            onChange={(e) => handleInputChange('logoUrl', e.target.value)}
+            required
+          />
+        </div> */}
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='space-y-2'>
-            <Label htmlFor='employeeName'>Employee Name *</Label>
+            <Label htmlFor='companyName'>Company Name *</Label>
             <Input
-              id='employeeName'
-              value={formData.employeeName}
-              onChange={(e) =>
-                handleInputChange('employeeName', e.target.value)
-              }
-              placeholder='John Doe'
+              id='companyName'
+              value={formData.companyName}
+              onChange={(e) => handleInputChange('companyName', e.target.value)}
+              placeholder='Acme Corporation'
               required
             />
           </div>
           <div className='space-y-2'>
-            <Label htmlFor='employeeId'>Employee ID</Label>
+            <Label htmlFor='companyPhone'>Company Phone *</Label>
+            <Input
+              id='companyPhone'
+              type='tel'
+              value={formData.companyPhone}
+              onChange={(e) =>
+                handleInputChange('companyPhone', e.target.value)
+              }
+              placeholder='4379998877'
+              required
+            />
+          </div>
+        </div>
+        <div className='space-y-2'>
+          <Label htmlFor='employeeName'>Employee Name *</Label>
+          <Input
+            id='employeeName'
+            value={formData.employeeName}
+            onChange={(e) => handleInputChange('employeeName', e.target.value)}
+            placeholder='John Doe'
+            required
+          />
+        </div>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='employeeIdType'>Employee ID Type *</Label>
+            <Input
+              id='employeeIdType'
+              value={formData.employeeIdType}
+              onChange={(e) =>
+                handleInputChange('employeeIdType', e.target.value)
+              }
+              placeholder='Passport'
+              required
+            />
+          </div>
+          <div className='space-y-2'>
+            <Label htmlFor='employeeId'>Employee ID *</Label>
             <Input
               id='employeeId'
               value={formData.employeeId}
               onChange={(e) => handleInputChange('employeeId', e.target.value)}
-              placeholder='EMP001'
-            />
-          </div>
-        </div>
-
-        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-          <div className='space-y-2'>
-            <Label htmlFor='position'>Position *</Label>
-            <Input
-              id='position'
-              value={formData.position}
-              onChange={(e) => handleInputChange('position', e.target.value)}
-              placeholder='Software Engineer'
+              placeholder='AT001'
               required
             />
           </div>
-          <div className='space-y-2'>
-            <Label htmlFor='department'>Department</Label>
-            <Input
-              id='department'
-              value={formData.department}
-              onChange={(e) => handleInputChange('department', e.target.value)}
-              placeholder='Engineering'
-            />
-          </div>
-        </div>
-
-        <div className='space-y-2'>
-          <Label htmlFor='companyName'>Company Name *</Label>
-          <Input
-            id='companyName'
-            value={formData.companyName}
-            onChange={(e) => handleInputChange('companyName', e.target.value)}
-            placeholder='Acme Corporation'
-            required
-          />
-        </div>
-
-        <div className='space-y-2'>
-          <Label htmlFor='startDate'>Start Date *</Label>
-          <Input
-            id='startDate'
-            type='date'
-            value={formData.startDate}
-            onChange={(e) => handleInputChange('startDate', e.target.value)}
-            required
-          />
         </div>
       </>
+    );
+
+    const startDateFields = (
+      <div className='space-y-2'>
+        <Label htmlFor='startDate'>Start Date *</Label>
+        <Input
+          id='startDate'
+          type='date'
+          value={formData.startDate}
+          onChange={(e) => handleInputChange('startDate', e.target.value)}
+          required
+        />
+      </div>
+    );
+
+    const roleFields = (
+      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+        <div className='space-y-2'>
+          <Label htmlFor='position'>Position *</Label>
+          <Input
+            id='position'
+            value={formData.position}
+            onChange={(e) => handleInputChange('position', e.target.value)}
+            placeholder='Software Engineer'
+            required
+          />
+        </div>
+        <div className='space-y-2'>
+          <Label htmlFor='department'>Department</Label>
+          <Input
+            id='department'
+            value={formData.department}
+            onChange={(e) => handleInputChange('department', e.target.value)}
+            placeholder='Engineering'
+          />
+        </div>
+      </div>
     );
 
     const salaryFields = (
@@ -205,26 +260,41 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
     );
 
     const managerFields = (
-      <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-        <div className='space-y-2'>
-          <Label htmlFor='managerName'>Manager Name</Label>
-          <Input
-            id='managerName'
-            value={formData.managerName}
-            onChange={(e) => handleInputChange('managerName', e.target.value)}
-            placeholder='Jane Smith'
-          />
+      <>
+        <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+          <div className='space-y-2'>
+            <Label htmlFor='managerName'>Manager Name</Label>
+            <Input
+              id='managerName'
+              value={formData.managerName}
+              onChange={(e) => handleInputChange('managerName', e.target.value)}
+              placeholder='Jane Smith'
+            />
+          </div>
+          <div className='space-y-2'>
+            <Label htmlFor='managerTitle'>Manager Title</Label>
+            <Input
+              id='managerTitle'
+              value={formData.managerTitle}
+              onChange={(e) =>
+                handleInputChange('managerTitle', e.target.value)
+              }
+              placeholder='Engineering Manager'
+            />
+          </div>
         </div>
-        <div className='space-y-2'>
-          <Label htmlFor='managerTitle'>Manager Title</Label>
+        {/* <div className='space-y-2'>
+          <Label htmlFor='managerSignature'>Manager Name</Label>
           <Input
-            id='managerTitle'
-            value={formData.managerTitle}
-            onChange={(e) => handleInputChange('managerTitle', e.target.value)}
-            placeholder='Engineering Manager'
+            id='managerSignature'
+            type='file'
+            value={formData.managerSignature}
+            onChange={(e) =>
+              handleInputChange('managerSignature', e.target.value)
+            }
           />
-        </div>
-      </div>
+        </div> */}
+      </>
     );
 
     switch (reportType) {
@@ -232,6 +302,8 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         return (
           <>
             {commonFields}
+            {roleFields}
+            {startDateFields}
             {managerFields}
           </>
         );
