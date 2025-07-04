@@ -1,370 +1,4 @@
-// 'use client';
-
-// import type React from 'react';
-
-// import { useState } from 'react';
-// import { Button } from '@/app/_components/ui/shadcn/button';
-// import {
-//   Card,
-//   CardContent,
-//   CardHeader,
-//   CardTitle,
-// } from '@/app/_components/ui/shadcn/card';
-// import { Input } from '@/app/_components/ui/shadcn/input';
-// import { Label } from '@/app/_components/ui/shadcn/label';
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from '@/app/_components/ui/shadcn/select';
-// import { Loader2 } from 'lucide-react';
-
-// interface ReportFormProps {
-//   reportType: string;
-// }
-
-// export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [formData, setFormData] = useState({
-//     logoUrl: undefined,
-//     employeeName: '',
-//     employeeId: '',
-//     employeeIdType: '',
-//     position: '',
-//     department: '',
-//     startDate: '',
-//     salary: '',
-//     workSchedule: '',
-//     // contractType?: 'HOURLY' | 'ANNUALLY',
-//     contractType: undefined,
-//     companyName: '',
-//     companyPhone: '',
-//     signerName: '',
-//     signerRole: '',
-//     signature: undefined,
-//     // footer: string,
-//   });
-
-//   const handleInputChange = (field: string, value: string) => {
-//     setFormData((prev) => ({
-//       ...prev,
-//       [field]: value,
-//     }));
-//   };
-
-//   const handleSubmit = async (e: React.FormEvent) => {
-//     e.preventDefault();
-//     setIsSubmitting(true);
-
-//     const reqObj = {
-//       header: {
-//         logoUrl: formData.logoUrl,
-//         stamp: {
-//           companyName: formData.companyName,
-//           companyPhone: formData.companyPhone,
-//         },
-//       },
-//       body: {
-//         date: new Date(),
-//         employee: {
-//           name: formData.employeeName,
-//           documentType: formData.employeeIdType,
-//           documentNumber: formData.employeeId,
-//           role: formData.position,
-//           startDate: formData.startDate,
-//         },
-//       },
-//       sign: {
-//         signerName: formData.signerName,
-//         signerRole: formData.signerRole,
-//         signatureUrl: formData.signature,
-//         companyName: formData.companyName,
-//       },
-//     };
-
-//     try {
-//       // Simulate API call to your backend
-//       const response = await fetch(`http://localhost:4000/pdf/${reportType}`, {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify(reqObj),
-//       });
-
-//       if (response.ok) {
-//         // Redirect to download page
-//         const blob = await response.blob();
-//         const url = window.URL.createObjectURL(blob);
-//         const a = document.createElement('a');
-//         a.href = url;
-//         a.download = `${formData.employeeName ?? 'custom-report'}.pdf`;
-//         a.click();
-//         alert('File was successfully generated!');
-//       } else {
-//         throw new Error('Failed to generate report');
-//       }
-//     } catch (error) {
-//       console.error('Error submitting form:', error);
-//       // Handle error (you might want to show a toast notification)
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-//   const getFormFields = () => {
-//     const commonFields = (
-//       <>
-//         <div className='space-y-2'>
-//           <Label htmlFor='logoUrl'>Company Logo *</Label>
-//           <Input
-//             id='logoUrl'
-//             type='file'
-//             value={formData.logoUrl}
-//             onChange={(e) => handleInputChange('logoUrl', e.target.value)}
-//             required
-//           />
-//         </div>
-//         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-//           <div className='space-y-2'>
-//             <Label htmlFor='companyName'>Company Name *</Label>
-//             <Input
-//               id='companyName'
-//               value={formData.companyName}
-//               onChange={(e) => handleInputChange('companyName', e.target.value)}
-//               placeholder='Acme Corporation'
-//               required
-//             />
-//           </div>
-//           <div className='space-y-2'>
-//             <Label htmlFor='companyPhone'>Company Phone *</Label>
-//             <Input
-//               id='companyPhone'
-//               type='tel'
-//               value={formData.companyPhone}
-//               onChange={(e) =>
-//                 handleInputChange('companyPhone', e.target.value)
-//               }
-//               placeholder='4379998877'
-//               required
-//             />
-//           </div>
-//         </div>
-//         <div className='space-y-2'>
-//           <Label htmlFor='employeeName'>Employee Name *</Label>
-//           <Input
-//             id='employeeName'
-//             value={formData.employeeName}
-//             onChange={(e) => handleInputChange('employeeName', e.target.value)}
-//             placeholder='John Doe'
-//             required
-//           />
-//         </div>
-//         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-//           <div className='space-y-2'>
-//             <Label htmlFor='employeeIdType'>Employee ID Type *</Label>
-//             <Input
-//               id='employeeIdType'
-//               value={formData.employeeIdType}
-//               onChange={(e) =>
-//                 handleInputChange('employeeIdType', e.target.value)
-//               }
-//               placeholder='Passport'
-//               required
-//             />
-//           </div>
-//           <div className='space-y-2'>
-//             <Label htmlFor='employeeId'>Employee ID *</Label>
-//             <Input
-//               id='employeeId'
-//               value={formData.employeeId}
-//               onChange={(e) => handleInputChange('employeeId', e.target.value)}
-//               placeholder='AT001'
-//               required
-//             />
-//           </div>
-//         </div>
-//       </>
-//     );
-
-//     const startDateFields = (
-//       <div className='space-y-2'>
-//         <Label htmlFor='startDate'>Start Date *</Label>
-//         <Input
-//           id='startDate'
-//           type='date'
-//           value={formData.startDate}
-//           onChange={(e) => handleInputChange('startDate', e.target.value)}
-//           required
-//         />
-//       </div>
-//     );
-
-//     const roleFields = (
-//       <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-//         <div className='space-y-2'>
-//           <Label htmlFor='position'>Position *</Label>
-//           <Input
-//             id='position'
-//             value={formData.position}
-//             onChange={(e) => handleInputChange('position', e.target.value)}
-//             placeholder='Software Engineer'
-//             required
-//           />
-//         </div>
-//         <div className='space-y-2'>
-//           <Label htmlFor='department'>Department</Label>
-//           <Input
-//             id='department'
-//             value={formData.department}
-//             onChange={(e) => handleInputChange('department', e.target.value)}
-//             placeholder='Engineering'
-//           />
-//         </div>
-//       </div>
-//     );
-
-//     const salaryFields = (
-//       <div className='space-y-2'>
-//         <Label htmlFor='salary'>Monthly Salary *</Label>
-//         <Input
-//           id='salary'
-//           type='number'
-//           value={formData.salary}
-//           onChange={(e) => handleInputChange('salary', e.target.value)}
-//           placeholder='5000'
-//           required
-//         />
-//       </div>
-//     );
-
-//     const scheduleFields = (
-//       <div className='space-y-2'>
-//         <Label htmlFor='workSchedule'>Work Schedule *</Label>
-//         <Select
-//           onValueChange={(value) => handleInputChange('workSchedule', value)}
-//         >
-//           <SelectTrigger>
-//             <SelectValue placeholder='Select work schedule' />
-//           </SelectTrigger>
-//           <SelectContent>
-//             <SelectItem value='full-time'>Full-time (40 hours/week)</SelectItem>
-//             <SelectItem value='part-time'>Part-time (20 hours/week)</SelectItem>
-//             <SelectItem value='flexible'>Flexible hours</SelectItem>
-//             <SelectItem value='remote'>Remote work</SelectItem>
-//           </SelectContent>
-//         </Select>
-//       </div>
-//     );
-
-//     const signerFields = (
-//       <>
-//         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
-//           <div className='space-y-2'>
-//             <Label htmlFor='signerName'>Manager Name</Label>
-//             <Input
-//               id='signerName'
-//               value={formData.signerName}
-//               onChange={(e) => handleInputChange('signerName', e.target.value)}
-//               placeholder='Jane Smith'
-//             />
-//           </div>
-//           <div className='space-y-2'>
-//             <Label htmlFor='signerRole'>Manager Title</Label>
-//             <Input
-//               id='signerRole'
-//               value={formData.signerRole}
-//               onChange={(e) =>
-//                 handleInputChange('signerRole', e.target.value)
-//               }
-//               placeholder='Engineering Manager'
-//             />
-//           </div>
-//         </div>
-//         <div className='space-y-2'>
-//           <Label htmlFor='signature'>Manager Name</Label>
-//           <Input
-//             id='signature'
-//             type='file'
-//             value={formData.signature}
-//             onChange={(e) =>
-//               handleInputChange('signature', e.target.value)
-//             }
-//           />
-//         </div>
-//       </>
-//     );
-
-//     switch (reportType) {
-//       case 'employment-letter':
-//         return (
-//           <>
-//             {commonFields}
-//             {roleFields}
-//             {startDateFields}
-//             {signerFields}
-//           </>
-//         );
-//       case 'salary-certificate':
-//         return (
-//           <>
-//             {commonFields}
-//             {salaryFields}
-//             {signerFields}
-//           </>
-//         );
-//       case 'work-schedule-certificate':
-//         return (
-//           <>
-//             {commonFields}
-//             {scheduleFields}
-//             {signerFields}
-//           </>
-//         );
-//       case 'income-proof':
-//         return (
-//           <>
-//             {commonFields}
-//             {salaryFields}
-//             {scheduleFields}
-//             {signerFields}
-//           </>
-//         );
-//       default:
-//         return commonFields;
-//     }
-//   };
-
-//   return (
-//     <Card>
-//       <CardHeader>
-//         <CardTitle>Report Information</CardTitle>
-//       </CardHeader>
-//       <CardContent>
-//         <form onSubmit={handleSubmit} className='space-y-6'>
-//           {getFormFields()}
-
-//           <Button type='submit' className='w-full' disabled={isSubmitting}>
-//             {isSubmitting ? (
-//               <>
-//                 <Loader2 className='mr-2 h-4 w-4 animate-spin' />
-//                 Generating Report...
-//               </>
-//             ) : (
-//               'Generate Report'
-//             )}
-//           </Button>
-//         </form>
-//       </CardContent>
-//     </Card>
-//   );
-// }
-
 'use client';
-
-import type React from 'react';
 
 import { useActionState } from 'react';
 import { Button } from '@/app/_components/ui/shadcn/button';
@@ -419,7 +53,6 @@ const initialState: State = {
   startDate: undefined,
   salary: undefined,
   workSchedule: undefined,
-  // contractType?: 'HOURLY' | 'ANNUALLY',
   contractType: undefined,
   companyName: '',
   companyPhone: '',
@@ -439,8 +72,6 @@ const handleSubmit = async (previousState: State, formData: FormData) => {
         body: formData,
       },
     );
-
-    console.log(response);
 
     if (response.ok) {
       // Redirect to download page
@@ -481,12 +112,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         />
         <div className='space-y-2'>
           <Label htmlFor='logo'>Company Logo *</Label>
-          <Input
-            id='logo'
-            type='file'
-            name='logo'
-            // required
-          />
+          <Input id='logo' type='file' name='logo' required />
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='space-y-2'>
@@ -494,6 +120,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
             <Input
               id='companyName'
               name='companyName'
+              type='text'
               placeholder='Acme Corporation'
               defaultValue={initialState.companyName}
               required
@@ -505,8 +132,9 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
               id='companyPhone'
               name='companyPhone'
               type='tel'
-              placeholder='4379998877'
+              placeholder='+1 (437)-356-1415'
               defaultValue={initialState.companyPhone}
+              pattern='^\+\d{1,3}\s\(\d{3}\)-\d{3}-\d{4}$'
               required
             />
           </div>
@@ -516,6 +144,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
           <Input
             id='employeeName'
             name='employeeName'
+            type='text'
             placeholder='John Doe'
             defaultValue={initialState.employeeName}
             required
@@ -527,6 +156,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
             <Input
               id='employeeIdType'
               name='employeeIdType'
+              type='text'
               placeholder='Passport'
               defaultValue={initialState.employeeIdType}
               required
@@ -537,6 +167,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
             <Input
               id='employeeId'
               name='employeeId'
+              type='text'
               placeholder='AT001'
               defaultValue={initialState.employeeId}
               required
@@ -566,6 +197,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
           <Input
             id='role'
             name='role'
+            type='text'
             placeholder='Software Engineer'
             defaultValue={initialState.role}
             required
@@ -576,6 +208,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
           <Input
             id='department'
             name='department'
+            type='text'
             placeholder='Engineering'
             defaultValue={initialState.department}
             required
@@ -586,11 +219,13 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
 
     const salaryFields = (
       <div className='space-y-2'>
-        <Label htmlFor='salary'>Monthly Salary *</Label>
+        <Label htmlFor='salary'>Average Income *</Label>
         <Input
           id='salary'
           name='salary'
           type='number'
+          min={1}
+          step={1}
           placeholder='5000'
           defaultValue={initialState.salary}
           required
@@ -646,6 +281,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
             <Input
               id='signerName'
               name='signerName'
+              type='text'
               placeholder='Jane Smith'
               defaultValue={initialState.signerName}
               required
@@ -656,6 +292,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
             <Input
               id='signerRole'
               name='signerRole'
+              type='text'
               placeholder='Engineering Manager'
               defaultValue={initialState.signerRole}
               required
@@ -672,7 +309,12 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
     const footerFields = (
       <div className='space-y-2'>
         <Label htmlFor='footer'>Footer</Label>
-        <Input id='footer' name='footer' defaultValue={initialState.footer} />
+        <Input
+          id='footer'
+          name='footer'
+          type='text'
+          defaultValue={initialState.footer}
+        />
       </div>
     );
 
@@ -703,6 +345,7 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         return (
           <>
             {commonFields}
+            {roleFields}
             {scheduleFields}
             {signerFields}
             {footerFields}
@@ -713,7 +356,6 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
           <>
             {commonFields}
             {salaryFields}
-            {scheduleFields}
             {signerFields}
             {footerFields}
           </>
