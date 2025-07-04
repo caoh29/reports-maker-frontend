@@ -12,37 +12,73 @@ import {
 } from '@/app/_components/ui/shadcn/select';
 import { Card, CardContent } from '@/app/_components/ui/shadcn/card';
 import { Edit, Briefcase, DollarSign, Calendar, Receipt } from 'lucide-react';
+import { Report } from '../page';
 
-const reportTypes = [
-  {
-    id: 'employment-letter',
-    name: 'Employment Letter',
-    description: 'Official employment verification letter',
-    icon: Briefcase,
-  },
-  {
-    id: 'salary-certificate',
-    name: 'Salary Certificate',
-    description: 'Salary verification and income statement',
-    icon: DollarSign,
-  },
-  {
-    id: 'work-schedule-certificate',
-    name: 'Work Schedule Certificate',
-    description: 'Work hours and schedule verification',
-    icon: Calendar,
-  },
-  {
-    id: 'income-proof',
-    name: 'Income Proof',
-    description: 'Comprehensive income verification document',
-    icon: Receipt,
-  },
-];
+// const reportTypes = [
+//   {
+//     id: 'employment-letter',
+//     name: 'Employment Letter',
+//     description: 'Official employment verification letter',
+//     icon: Briefcase,
+//   },
+//   {
+//     id: 'salary-certificate',
+//     name: 'Salary Certificate',
+//     description: 'Salary verification and income statement',
+//     icon: DollarSign,
+//   },
+//   {
+//     id: 'work-schedule-certificate',
+//     name: 'Work Schedule Certificate',
+//     description: 'Work hours and schedule verification',
+//     icon: Calendar,
+//   },
+//   {
+//     id: 'income-proof',
+//     name: 'Income Proof',
+//     description: 'Comprehensive income verification document',
+//     icon: Receipt,
+//   },
+// ];
 
-export default function ReportSelector() {
-  // const [selectedReport, setSelectedReport] = useState<string>('');
+interface ReportSelectorProps {
+  reports: Report[];
+}
+
+export default function ReportSelector({
+  reports,
+}: Readonly<ReportSelectorProps>) {
   const router = useRouter();
+
+  const reportTypes = reports.map((report) => {
+    switch (report.id) {
+      case 'employment-letter':
+        return {
+          ...report,
+          icon: Briefcase,
+        };
+      case 'salary-certificate':
+        return {
+          ...report,
+          icon: DollarSign,
+        };
+      case 'work-schedule-certificate':
+        return {
+          ...report,
+          icon: Calendar,
+        };
+      case 'income-proof':
+        return {
+          ...report,
+          icon: Receipt,
+        };
+      default:
+        return {
+          ...report,
+          icon: '',
+        };
+    }
+  });
 
   const handleReportSelect = (reportId: string) => {
     if (reportId === 'custom') {

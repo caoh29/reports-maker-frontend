@@ -3,6 +3,7 @@ import ReportForm from '@/app/_components/report-form';
 import ReportPreview from '@/app/_components/report-preview';
 import { Main } from '@/app/_components/ui/main';
 import { capitalizeString } from '@/lib/utils';
+import { Report } from '../../page';
 
 const validReportTypes = [
   'employment-letter',
@@ -26,22 +27,23 @@ interface PageProps {
 
 // type Report = {
 //   name: string;
-//   type: string;
+//   id: string;
+//   description: string;
 // };
 
-// export async function generateStaticParams() {
-//   const reports: Report[] | null = await fetch(
-//     'http://127.0.0.1:3000/pdf/reports',
-//   ).then((res) => res.json());
+export async function generateStaticParams() {
+  const reports: Report[] | null = await fetch(
+    'http://localhost:4000/pdf/reports',
+  ).then((res) => res.json());
 
-//   if (!reports) {
-//     return [];
-//   }
+  if (!reports) {
+    return [];
+  }
 
-//   return reports.map((report) => ({
-//     type: report.name,
-//   }));
-// }
+  return reports.map((report) => ({
+    type: report.name,
+  }));
+}
 
 export default async function CreateReportPage({
   params,
@@ -54,12 +56,14 @@ export default async function CreateReportPage({
   }
 
   return (
-    <Main className='bg-gray-50'>
+    <Main className='bg-blue-300 dark:bg-blue-500/30'>
       <div className='container flex flex-col items-center md:items-start mx-auto px-4 pt-8 pb-4'>
-        <h1 className='text-2xl font-bold text-black'>
+        <h1 className='text-2xl font-bold text-black dark:text-gray-100'>
           Create {capitalizeString(type)}
         </h1>
-        <p className='text-gray-600'>Design your own personalized report</p>
+        <p className='text-gray-600 dark:text-gray-400'>
+          Design your own personalized report
+        </p>
       </div>
 
       {/* Main Content */}

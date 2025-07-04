@@ -9,9 +9,20 @@ import {
 import ReportSelector from '@/app/_components/report-selector';
 import { Main } from './_components/ui/main';
 
-export default function LandingPage() {
+export type Report = {
+  name: string;
+  id: string;
+  description: string;
+};
+
+export default async function LandingPage() {
+  const reports: Report[] =
+    (await fetch('http://localhost:4000/pdf/reports', {
+      cache: 'force-cache',
+    }).then((res) => res.json())) ?? [];
+
   return (
-    <Main className='bg-accent'>
+    <Main className='bg-blue-300 dark:bg-blue-500/30'>
       <section className='container mx-auto px-4 py-12 text-center'>
         <div className='max-w-3xl mx-auto'>
           <h2 className='text-4xl md:text-6xl font-bold text-foreground mb-6'>
@@ -82,18 +93,11 @@ export default function LandingPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <ReportSelector />
+              <ReportSelector reports={reports} />
             </CardContent>
           </Card>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className='container mx-auto px-4 py-8 mt-12 border-t'>
-        <div className='text-center text-gray-600'>
-          <p>&copy; 2024 ReportGen. All rights reserved.</p>
-        </div>
-      </footer>
     </Main>
   );
 }
