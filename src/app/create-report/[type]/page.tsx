@@ -1,7 +1,9 @@
+import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import ReportForm from '@/app/_components/report-form';
 import ReportPreview from '@/app/_components/report-preview';
 import { Main } from '@/app/_components/ui/main';
+import { ReportPreviewSkeleton } from '@/app/_components/ui/report-preview-skeleton';
 import { capitalizeString } from '@/lib/utils';
 import { Report } from '../../page';
 
@@ -82,7 +84,9 @@ export default async function CreateReportPage({
 
           {/* Right Column: Preview */}
           <div className='sticky top-8'>
-            <ReportPreview reportType={type} />
+            <Suspense fallback={<ReportPreviewSkeleton />}>
+              <ReportPreview reportType={type} />
+            </Suspense>
           </div>
         </div>
       </div>
