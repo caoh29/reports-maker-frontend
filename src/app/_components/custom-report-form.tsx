@@ -12,6 +12,7 @@ import { Input } from '@/app/_components/ui/shadcn/input';
 import { Label } from '@/app/_components/ui/shadcn/label';
 import { Textarea } from '@/app/_components/ui/shadcn/textarea';
 import { Loader2 } from 'lucide-react';
+// import { capitalizeString } from '@/lib/utils';
 
 interface State {
   logo?: File;
@@ -82,7 +83,9 @@ export default function CustomReportForm() {
     <div className='max-w-2xl mx-auto'>
       <Card>
         <CardHeader>
-          <CardTitle>Custom Report Information</CardTitle>
+          <CardTitle>
+            {state.reportTitle.length >= 0 && ''}Custom Report Information
+          </CardTitle>
         </CardHeader>
         <CardContent>
           <form action={formAction} className='space-y-6'>

@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/app/_components/ui/shadcn/select';
 import { Loader2 } from 'lucide-react';
+import { capitalizeString } from '@/lib/utils';
 
 interface ReportFormProps {
   reportType: string;
@@ -368,7 +369,9 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Report Information</CardTitle>
+        <CardTitle>
+          {capitalizeString(state.reportType)} Report Information
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form action={formAction} className='space-y-6'>

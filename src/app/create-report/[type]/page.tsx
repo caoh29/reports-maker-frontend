@@ -22,9 +22,9 @@ const validReportTypes = [
 // };
 
 interface PageProps {
-  params: {
+  params: Promise<{
     type: string;
-  };
+  }>;
 }
 
 // type Report = {
@@ -52,6 +52,7 @@ export default async function CreateReportPage({
 }: Readonly<PageProps>) {
   const awaitedParams = await Promise.resolve(params);
   const { type } = awaitedParams;
+  // const { type } = params;
 
   if (!validReportTypes.includes(type)) {
     notFound();
