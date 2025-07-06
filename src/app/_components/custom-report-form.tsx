@@ -1,8 +1,6 @@
 'use client';
 
-import type React from 'react';
-// import { useActionState } from 'react';
-import { useState } from 'react';
+import { useActionState } from 'react';
 import { Button } from '@/app/_components/ui/shadcn/button';
 import {
   Card,
@@ -15,72 +13,86 @@ import { Label } from '@/app/_components/ui/shadcn/label';
 import { Textarea } from '@/app/_components/ui/shadcn/textarea';
 import { Loader2 } from 'lucide-react';
 
-export default function CustomReportForm() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    title: '',
-    recipientName: '',
-    recipientTitle: '',
-    companyName: '',
-    reportBody: '',
-    authorName: '',
-    authorTitle: '',
-    date: new Date().toISOString().split('T')[0],
-  });
+interface State {
+  logo?: File;
+  reportTitle: string;
+  recipientName?: string;
+  recipientTitle?: string;
+  content: string;
+  companyName: string;
+  companyPhone: string;
+  signerName: string;
+  signerRole: string;
+  signature?: File;
+  footer?: string;
+  date: string;
+}
 
-  const handleInputChange = (field: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [field]: value,
-    }));
-  };
+const initialState: State = {
+  logo: undefined,
+  recipientName: '',
+  recipientTitle: '',
+  companyName: '',
+  companyPhone: '',
+  signerName: '',
+  signerRole: '',
+  signature: undefined,
+  footer: '',
+  reportTitle: '',
+  content: '',
+  date: '',
+};
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+const handleSubmit = async (previousState: State, formData: FormData) => {
+  try {
+    const response = await fetch(`http://localhost:4000/pdf/custom`, {
+      method: 'POST',
+      body: formData,
+    });
 
-    try {
-      // Simulate API call to your backend
-      const response = await fetch('http://localhost:4000/pdf/custom', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+    console.log(response);
 
-      if (response.ok) {
-        const blob = await response.blob();
-        const url = window.URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `${formData.title ?? 'custom-report'}.pdf`;
-        a.click();
-      } else {
-        throw new Error('Failed to generate report');
-      }
-    } catch (error) {
-      console.error('Error submitting form:', error);
-      // Handle error (you might want to show a toast notification)
-    } finally {
-      setIsSubmitting(false);
+    if (response.ok) {
+      // Redirect to download page
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${formData.get('reportTitle') ?? 'custom-report'}.pdf`;
+      a.click();
+      alert('File was successfully generated!');
+    } else {
+      throw new Error('Failed to generate report');
     }
-  };
+  } catch (error) {
+    console.error('Error submitting form:', error);
+    // Handle error (you might want to show a toast notification)
+  }
+
+  return initialState;
+};
+
+export default function CustomReportForm() {
+  const [state, formAction, isPending] = useActionState(
+    handleSubmit,
+    initialState,
+  );
 
   return (
     <div className='max-w-2xl mx-auto'>
       <Card>
         <CardHeader>
-          <CardTitle>Custom Report Details</CardTitle>
+          <CardTitle>Custom Report Information</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className='space-y-6'>
+          <form action={formAction} className='space-y-6'>
             <div className='space-y-2'>
-              <Label htmlFor='title'>Report Title *</Label>
+              <Label htmlFor='reportTitle'>Report Title *</Label>
               <Input
-                id='title'
-                value={formData.title}
-                onChange={(e) => handleInputChange('title', e.target.value)}
+                id='reportTitle'
+                type='text'
+                name='reportTitle'
+                defaultValue={initialState.reportTitle}
                 placeholder='Monthly Performance Report'
                 required
               />
@@ -91,10 +103,9 @@ export default function CustomReportForm() {
                 <Label htmlFor='recipientName'>Recipient Name</Label>
                 <Input
                   id='recipientName'
-                  value={formData.recipientName}
-                  onChange={(e) =>
-                    handleInputChange('recipientName', e.target.value)
-                  }
+                  type='text'
+                  name='recipientName'
+                  defaultValue={initialState.recipientName}
                   placeholder='John Doe'
                 />
               </div>
@@ -102,35 +113,51 @@ export default function CustomReportForm() {
                 <Label htmlFor='recipientTitle'>Recipient Title</Label>
                 <Input
                   id='recipientTitle'
-                  value={formData.recipientTitle}
-                  onChange={(e) =>
-                    handleInputChange('recipientTitle', e.target.value)
-                  }
-                  placeholder='HR Manager'
+                  type='text'
+                  name='recipientTitle'
+                  defaultValue={initialState.recipientTitle}
+                  placeholder='Mr./Dr.'
                 />
               </div>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='companyName'>Company Name</Label>
-              <Input
-                id='companyName'
-                value={formData.companyName}
-                onChange={(e) =>
-                  handleInputChange('companyName', e.target.value)
-                }
-                placeholder='Acme Corporation'
-              />
+              <Label htmlFor='logo'>Company Logo *</Label>
+              <Input id='logo' type='file' name='logo' required />
+            </div>
+
+            <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
+              <div className='space-y-2'>
+                <Label htmlFor='companyName'>Company Name *</Label>
+                <Input
+                  id='companyName'
+                  name='companyName'
+                  type='text'
+                  placeholder='Acme Corporation'
+                  defaultValue={initialState.companyName}
+                  required
+                />
+              </div>
+              <div className='space-y-2'>
+                <Label htmlFor='companyPhone'>Company Phone *</Label>
+                <Input
+                  id='companyPhone'
+                  name='companyPhone'
+                  type='tel'
+                  placeholder='+1 (437)-356-1415'
+                  defaultValue={initialState.companyPhone}
+                  pattern='^\+\d{1,3}\s\(\d{3}\)-\d{3}-\d{4}$'
+                  required
+                />
+              </div>
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='reportBody'>Report Content *</Label>
+              <Label htmlFor='content'>Report Content *</Label>
               <Textarea
-                id='reportBody'
-                value={formData.reportBody}
-                onChange={(e) =>
-                  handleInputChange('reportBody', e.target.value)
-                }
+                id='content'
+                name='content'
+                defaultValue={initialState.content}
                 placeholder='Enter the main content of your report here. You can include multiple paragraphs, bullet points, and any other relevant information...'
                 rows={10}
                 required
@@ -144,28 +171,31 @@ export default function CustomReportForm() {
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <div className='space-y-2'>
-                <Label htmlFor='authorName'>Author Name *</Label>
+                <Label htmlFor='signerName'>Signer Name *</Label>
                 <Input
-                  id='authorName'
-                  value={formData.authorName}
-                  onChange={(e) =>
-                    handleInputChange('authorName', e.target.value)
-                  }
+                  id='signerName'
+                  name='signerName'
+                  type='text'
                   placeholder='Jane Smith'
+                  defaultValue={initialState.signerName}
                   required
                 />
               </div>
               <div className='space-y-2'>
-                <Label htmlFor='authorTitle'>Author Title</Label>
+                <Label htmlFor='signerRole'>Signer Role *</Label>
                 <Input
-                  id='authorTitle'
-                  value={formData.authorTitle}
-                  onChange={(e) =>
-                    handleInputChange('authorTitle', e.target.value)
-                  }
-                  placeholder='Department Manager'
+                  id='signerRole'
+                  name='signerRole'
+                  type='text'
+                  placeholder='Engineering Manager'
+                  defaultValue={initialState.signerRole}
+                  required
                 />
               </div>
+            </div>
+            <div className='space-y-2'>
+              <Label htmlFor='signature'>Signature</Label>
+              <Input id='signature' name='signature' type='file' />
             </div>
 
             <div className='space-y-2'>
@@ -173,14 +203,24 @@ export default function CustomReportForm() {
               <Input
                 id='date'
                 type='date'
-                value={formData.date}
-                onChange={(e) => handleInputChange('date', e.target.value)}
+                name='date'
+                defaultValue={initialState.date}
                 required
               />
             </div>
 
-            <Button type='submit' className='w-full' disabled={isSubmitting}>
-              {isSubmitting ? (
+            <div className='space-y-2'>
+              <Label htmlFor='footer'>Footer</Label>
+              <Input
+                id='footer'
+                name='footer'
+                type='text'
+                defaultValue={initialState.footer}
+              />
+            </div>
+
+            <Button type='submit' className='w-full' disabled={isPending}>
+              {isPending ? (
                 <>
                   <Loader2 className='mr-2 h-4 w-4 animate-spin' />
                   Generating Custom Report...
