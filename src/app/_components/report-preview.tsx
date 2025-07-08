@@ -213,7 +213,7 @@ export default function ReportPreview({
         {/* <div className='bg-white border rounded-lg p-6 shadow-sm'> */}
         {/* {getPreviewContent()} */}
         <iframe
-          src={`http://localhost:4000/pdf/${reportType}`}
+          src={`/api/pdf/${reportType}`}
           title={reportType}
           allow='fullscreen'
           className='w-full h-full'

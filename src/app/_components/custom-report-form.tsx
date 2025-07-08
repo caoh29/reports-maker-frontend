@@ -20,8 +20,8 @@ interface State {
   recipientName?: string;
   recipientTitle?: string;
   content: string;
-  companyName: string;
-  companyPhone: string;
+  companyName?: string;
+  companyPhone?: string;
   signerName: string;
   signerRole: string;
   signature?: File;
@@ -46,12 +46,10 @@ const initialState: State = {
 
 const handleSubmit = async (previousState: State, formData: FormData) => {
   try {
-    const response = await fetch(`http://localhost:4000/pdf/custom`, {
+    const response = await fetch(`/api/pdf/custom`, {
       method: 'POST',
       body: formData,
     });
-
-    console.log(response);
 
     if (response.ok) {
       // Redirect to download page
@@ -125,32 +123,35 @@ export default function CustomReportForm() {
             </div>
 
             <div className='space-y-2'>
-              <Label htmlFor='logo'>Company Logo *</Label>
-              <Input id='logo' type='file' name='logo' required />
+              <Label htmlFor='logo'>Company Logo</Label>
+              <Input
+                id='logo'
+                type='file'
+                name='logo'
+                accept='image/png, image/jpeg'
+              />
             </div>
 
             <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
               <div className='space-y-2'>
-                <Label htmlFor='companyName'>Company Name *</Label>
+                <Label htmlFor='companyName'>Company Name</Label>
                 <Input
                   id='companyName'
                   name='companyName'
                   type='text'
                   placeholder='Acme Corporation'
                   defaultValue={initialState.companyName}
-                  required
                 />
               </div>
               <div className='space-y-2'>
-                <Label htmlFor='companyPhone'>Company Phone *</Label>
+                <Label htmlFor='companyPhone'>Company Phone</Label>
                 <Input
                   id='companyPhone'
                   name='companyPhone'
                   type='tel'
-                  placeholder='+1 (437)-356-1415'
+                  placeholder='437-356-1415'
                   defaultValue={initialState.companyPhone}
-                  pattern='^\+\d{1,3}\s\(\d{3}\)-\d{3}-\d{4}$'
-                  required
+                  pattern='\d{3}\-\d{3}-\d{4}$'
                 />
               </div>
             </div>
@@ -198,7 +199,12 @@ export default function CustomReportForm() {
             </div>
             <div className='space-y-2'>
               <Label htmlFor='signature'>Signature</Label>
-              <Input id='signature' name='signature' type='file' />
+              <Input
+                id='signature'
+                name='signature'
+                type='file'
+                accept='image/png, image/jpeg'
+              />
             </div>
 
             <div className='space-y-2'>

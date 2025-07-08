@@ -17,7 +17,7 @@ export type Report = {
 
 export default async function LandingPage() {
   const reports: Report[] =
-    (await fetch('http://localhost:4000/pdf/reports', {
+    (await fetch('http://localhost:4000/api/pdf/reports', {
       cache: 'force-cache',
     }).then((res) => res.json())) ?? [];
 

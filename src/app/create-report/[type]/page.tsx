@@ -35,7 +35,7 @@ interface PageProps {
 
 export async function generateStaticParams() {
   const reports: Report[] | null = await fetch(
-    'http://localhost:4000/pdf/reports',
+    'http://localhost:4000/api/pdf/reports',
   ).then((res) => res.json());
 
   if (!reports) {
@@ -43,7 +43,7 @@ export async function generateStaticParams() {
   }
 
   return reports.map((report) => ({
-    type: report.name,
+    type: report.id,
   }));
 }
 

@@ -66,13 +66,10 @@ const initialState: State = {
 
 const handleSubmit = async (previousState: State, formData: FormData) => {
   try {
-    const response = await fetch(
-      `http://localhost:4000/pdf/${formData.get('reportType')}`,
-      {
-        method: 'POST',
-        body: formData,
-      },
-    );
+    const response = await fetch(`/api/pdf/${formData.get('reportType')}`, {
+      method: 'POST',
+      body: formData,
+    });
 
     if (response.ok) {
       // Redirect to download page
@@ -113,7 +110,13 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         />
         <div className='space-y-2'>
           <Label htmlFor='logo'>Company Logo *</Label>
-          <Input id='logo' type='file' name='logo' required />
+          <Input
+            id='logo'
+            type='file'
+            name='logo'
+            accept='image/png, image/jpeg'
+            required
+          />
         </div>
         <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
           <div className='space-y-2'>
@@ -133,9 +136,9 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
               id='companyPhone'
               name='companyPhone'
               type='tel'
-              placeholder='+1 (437)-356-1415'
+              placeholder='437-356-1415'
               defaultValue={initialState.companyPhone}
-              pattern='^\+\d{1,3}\s\(\d{3}\)-\d{3}-\d{4}$'
+              pattern='\d{3}\-\d{3}-\d{4}$'
               required
             />
           </div>
@@ -302,7 +305,12 @@ export default function ReportForm({ reportType }: Readonly<ReportFormProps>) {
         </div>
         <div className='space-y-2'>
           <Label htmlFor='signature'>Signature</Label>
-          <Input id='signature' name='signature' type='file' />
+          <Input
+            id='signature'
+            name='signature'
+            type='file'
+            accept='image/png, image/jpeg'
+          />
         </div>
       </>
     );
